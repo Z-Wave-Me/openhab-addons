@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,21 +30,21 @@ public interface BedStatusListener {
      *
      * @param status the bed status returned from the cloud service
      */
-    public void onBedStateChanged(BedStatus status);
+    void onBedStateChanged(BedStatus status);
 
     /**
      * This method will be called whenever a new foundation status is received by the cloud handler.
      *
      * @param status the foundation status returned from the cloud service
      */
-    public void onFoundationStateChanged(String bedId, FoundationStatusResponse status);
+    void onFoundationStateChanged(String bedId, FoundationStatusResponse status);
 
     /**
      * Determine if bed has a foundation installed.
      *
      * @return true if bed has a foundation; otherwise falase
      */
-    public boolean isFoundationInstalled();
+    boolean isFoundationInstalled();
 
-    public void onSleeperChanged(@Nullable Sleeper sleeper);
+    void onSleeperChanged(@Nullable Sleeper sleeper);
 }

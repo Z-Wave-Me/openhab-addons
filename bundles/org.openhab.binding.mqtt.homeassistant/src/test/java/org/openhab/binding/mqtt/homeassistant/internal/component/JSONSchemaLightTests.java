@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,29 +41,31 @@ public class JSONSchemaLightTests extends AbstractComponentTests {
     public void testRgb() throws InterruptedException {
         // @formatter:off
         var component = (Light) discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
-                "{ " +
-                        "  \"availability\": [ " +
-                        "    { " +
-                        "      \"topic\": \"zigbee2mqtt/bridge/state\" " +
-                        "    } " +
-                        "  ], " +
-                        "  \"device\": { " +
-                        "    \"identifiers\": [ " +
-                        "      \"zigbee2mqtt_0x0000000000000000\" " +
-                        "    ], " +
-                        "    \"manufacturer\": \"Lights inc\", " +
-                        "    \"model\": \"light v1\", " +
-                        "    \"name\": \"Light\", " +
-                        "    \"sw_version\": \"Zigbee2MQTT 1.18.2\" " +
-                        "  }, " +
-                        "  \"name\": \"light\", " +
-                        "  \"schema\": \"json\", " +
-                        "  \"state_topic\": \"zigbee2mqtt/light/state\", " +
-                        "  \"command_topic\": \"zigbee2mqtt/light/set/state\", " +
-                        "  \"brightness\": true, " +
-                        "  \"color_mode\": true, " +
-                        "  \"supported_color_modes\": [\"onoff\", \"brightness\", \"rgb\"]" +
-                        "}");
+                """
+                { \
+                  "availability": [ \
+                    { \
+                      "topic": "zigbee2mqtt/bridge/state" \
+                    } \
+                  ], \
+                  "device": { \
+                    "identifiers": [ \
+                      "zigbee2mqtt_0x0000000000000000" \
+                    ], \
+                    "manufacturer": "Lights inc", \
+                    "model": "light v1", \
+                    "name": "Light", \
+                    "sw_version": "Zigbee2MQTT 1.18.2" \
+                  }, \
+                  "name": "light", \
+                  "schema": "json", \
+                  "state_topic": "zigbee2mqtt/light/state", \
+                  "command_topic": "zigbee2mqtt/light/set/state", \
+                  "brightness": true, \
+                  "color_mode": true, \
+                  "supported_color_modes": ["onoff", "brightness", "rgb"]\
+                }\
+                """);
         // @formatter:on
 
         assertThat(component.channels.size(), is(1));
@@ -76,7 +78,7 @@ public class JSONSchemaLightTests extends AbstractComponentTests {
         publishMessage("zigbee2mqtt/light/state", "{ \"color\": {\"r\": 10, \"g\": 20, \"b\": 30 } }");
         assertState(component, Light.COLOR_CHANNEL_ID, HSBType.fromRGB(10, 20, 30));
         publishMessage("zigbee2mqtt/light/state", "{ \"brightness\": 255 }");
-        assertState(component, Light.COLOR_CHANNEL_ID, new HSBType("210,66,100"));
+        assertState(component, Light.COLOR_CHANNEL_ID, new HSBType("210,67,100"));
 
         sendCommand(component, Light.COLOR_CHANNEL_ID, HSBType.BLUE);
         assertPublished("zigbee2mqtt/light/set/state",
@@ -97,13 +99,15 @@ public class JSONSchemaLightTests extends AbstractComponentTests {
     public void testBrightnessAndOnOff() throws InterruptedException {
         // @formatter:off
         var component = (Light) discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
-                "{ " +
-                        "  \"name\": \"light\", " +
-                        "  \"schema\": \"json\", " +
-                        "  \"state_topic\": \"zigbee2mqtt/light/state\", " +
-                        "  \"command_topic\": \"zigbee2mqtt/light/set/state\", " +
-                        "  \"brightness\": true" +
-                        "}");
+                """
+                { \
+                  "name": "light", \
+                  "schema": "json", \
+                  "state_topic": "zigbee2mqtt/light/state", \
+                  "command_topic": "zigbee2mqtt/light/set/state", \
+                  "brightness": true\
+                }\
+                """);
         // @formatter:on
 
         assertThat(component.channels.size(), is(1));
@@ -114,6 +118,9 @@ public class JSONSchemaLightTests extends AbstractComponentTests {
         publishMessage("zigbee2mqtt/light/state", "{ \"state\": \"ON\", \"brightness\": 128 }");
         assertState(component, Light.BRIGHTNESS_CHANNEL_ID,
                 new PercentType(new BigDecimal(128 * 100).divide(new BigDecimal(255), MathContext.DECIMAL128)));
+
+        publishMessage("zigbee2mqtt/light/state", "{ \"state\": \"OFF\", \"brightness\": 128 }");
+        assertState(component, Light.BRIGHTNESS_CHANNEL_ID, PercentType.ZERO);
 
         sendCommand(component, Light.BRIGHTNESS_CHANNEL_ID, PercentType.HUNDRED);
         assertPublished("zigbee2mqtt/light/set/state", "{\"state\":\"ON\",\"brightness\":255}");
@@ -126,12 +133,14 @@ public class JSONSchemaLightTests extends AbstractComponentTests {
     public void testOnOffOnly() throws InterruptedException {
         // @formatter:off
         var component = (Light) discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
-                "{ " +
-                        "  \"name\": \"light\", " +
-                        "  \"schema\": \"json\", " +
-                        "  \"state_topic\": \"zigbee2mqtt/light/state\", " +
-                        "  \"command_topic\": \"zigbee2mqtt/light/set/state\"" +
-                        "}");
+                """
+                { \
+                  "name": "light", \
+                  "schema": "json", \
+                  "state_topic": "zigbee2mqtt/light/state", \
+                  "command_topic": "zigbee2mqtt/light/set/state"\
+                }\
+                """);
         // @formatter:on
 
         assertThat(component.channels.size(), is(1));
